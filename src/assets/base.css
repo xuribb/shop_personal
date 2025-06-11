@@ -4,3 +4,7 @@
     --color-secondary-black: #393e46;
     --color-main-black: #222831;
 }
+body{
+    margin: 0;
+    padding: 0;
+}
