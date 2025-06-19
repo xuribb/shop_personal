@@ -3,9 +3,9 @@
         <div class="content">
             <div class="left">
                 <span>欢迎你：游客&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <span class="pointer">登录</span>
+                <RouterLink to="/login" class="pointer">登录</RouterLink>
                 <span>|</span>
-                <span class="pointer">注册</span>
+                <RouterLink to="/login?type=1" class="pointer">注册</RouterLink>
             </div>
             <div class="right">
                 <span class="pointer">个人中心</span>
@@ -39,8 +39,12 @@
     margin: 0 auto;
 }
 
-.left>span {
-    margin-right: 8px;
+.content a {
+    color: var(--color-white);
+}
+
+.left>span:last-of-type {
+    margin: 0 8px;
 }
 
 .right>span {

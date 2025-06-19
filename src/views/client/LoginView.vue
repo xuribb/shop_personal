@@ -8,19 +8,19 @@
             <div class="login_section">
                 <div></div>
                 <div class="login_wrap" v-if="is_login">
-                    <input class="login_input" placeholder="用户名" type="text">
-                    <input class="login_input" placeholder="密码" type="password">
-                    <div class="login_btn pointer">登录</div>
+                    <input v-model.trim="username" class="login_input" placeholder="用户名" type="text">
+                    <input v-model.trim="password" class="login_input" placeholder="密码" type="password">
+                    <div class="login_btn pointer" @click="login">登录</div>
                     <div class="login_other">
                         <div class="pointer" @click="is_login = !is_login">立即注册</div>
                         <div class="pointer">忘记密码?</div>
                     </div>
                 </div>
                 <div class="register_wrap" v-else>
-                    <input class="login_input" placeholder="用户名" type="text">
-                    <input class="login_input" placeholder="密码" type="password">
-                    <input class="login_input" placeholder="确认密码" type="password">
-                    <div class="login_btn pointer">注册</div>
+                    <input v-model.trim="username" class="login_input" placeholder="用户名" type="text">
+                    <input v-model.trim="password" class="login_input" placeholder="密码" type="password">
+                    <input v-model.trim="password2" class="login_input" placeholder="确认密码" type="password">
+                    <div class="login_btn pointer" @click="register">注册</div>
                     <div class="login_other">
                         <div></div>
                         <div class="pointer" @click="is_login = !is_login">已有账号，登录</div>
@@ -42,7 +42,80 @@ export default {
     data() {
         return {
             is_login: true,
+            username: "",
+            password: "",
+            password2: ""
         }
+    },
+    methods: {
+        async login() {
+            if (!this.username || !this.password) {
+                return ElMessage({
+                    message: '用户名或密码错误！',
+                    type: 'error',
+                    plain: true,
+                });
+            }
+
+            let response = null;
+            try {
+                response = await fetch({
+                    url: this.domain + "/user/register",
+                    method: "POST",
+                    data: {
+                        username: this.username,
+                        password: this.password
+                    }
+                });
+            } catch {
+                return ElMessage({
+                    message: '网络请求失败，请稍后重试',
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            response = await response.json();
+            console.log(response);
+        },
+        async register() {
+            if (!this.username || !this.password) {
+                return ElMessage({
+                    message: '用户名或密码错误！',
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            if (this.password !== this.password2) {
+                return ElMessage({
+                    message: '两次密码不一致！',
+                    type: 'error',
+                    plain: true,
+                });
+            }
+
+            let response = await this.request("/user/register", "POST", {
+                username: this.username,
+                password: this.password
+            });
+            if (response === null) {
+                return;
+            }
+
+            response = await response.json();
+            ElMessage({
+                message: response.msg,
+                type: response.status ? 'success' : 'error',
+                plain: true,
+            });
+            if (response.status) {
+                console.log(this.$route);
+            }
+        },
+    },
+    mounted() {
+        // if (this.$route.query?.type) {
+        //     this.is_login = false;
+        // }
     }
 }
 </script>
