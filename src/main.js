@@ -7,14 +7,10 @@ import ElementPlus from 'element-plus'
 import App from './App.vue'
 import router from './router'
 
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
-app.use(ElementPlus)
+const app = createApp(App);
 
 app.config.globalProperties = {
-    domain: "http://shop_personal_backend",
+    domain: "/api",
     async request(url, method = "GET", body = "") {
         try {
             let options = null;
@@ -39,4 +35,8 @@ app.config.globalProperties = {
     }
 }
 
-app.mount('#app')
+app.use(createPinia());
+app.use(ElementPlus);
+app.use(router);
+
+app.mount('#app');

@@ -57,25 +57,24 @@ export default {
                 });
             }
 
-            let response = null;
-            try {
-                response = await fetch({
-                    url: this.domain + "/user/register",
-                    method: "POST",
-                    data: {
-                        username: this.username,
-                        password: this.password
-                    }
-                });
-            } catch {
-                return ElMessage({
-                    message: '网络请求失败，请稍后重试',
-                    type: 'error',
-                    plain: true,
-                });
+            let response = await this.request("/user/login", "POST", {
+                username: this.username,
+                password: this.password
+            });
+            if (response === null) {
+                return;
             }
+
             response = await response.json();
-            console.log(response);
+            ElMessage({
+                message: response.msg,
+                type: response.status ? 'success' : 'error',
+                plain: true,
+            });
+            if (response.status) {
+                sessionStorage.setItem("username", this.username);
+                this.$router.back();
+            }
         },
         async register() {
             if (!this.username || !this.password) {
@@ -108,14 +107,15 @@ export default {
                 plain: true,
             });
             if (response.status) {
-                console.log(this.$route);
+                sessionStorage.setItem("username", this.username);
+                this.$router.back();
             }
         },
     },
     mounted() {
-        // if (this.$route.query?.type) {
-        //     this.is_login = false;
-        // }
+        if (this.$route.query?.type) {
+            this.is_login = false;
+        }
     }
 }
 </script>
