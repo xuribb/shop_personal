@@ -11,9 +11,9 @@
                     <img src="/images/gerenxinxi.png">
                     <span>个人信息</span>
                 </RouterLink>
-                <RouterLink to="/profile">
+                <RouterLink to="/profile/location">
                     <img src="/images/wodedizhi.png">
-                    <span>我的地址</span>
+                    <span>收货地址</span>
                 </RouterLink>
                 <RouterLink to="/profile">
                     <img src="/images/anquanshezhi.png">

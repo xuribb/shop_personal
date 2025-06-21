@@ -6,6 +6,7 @@ import Order from '../section/client/Order.vue';
 
 import ProfileView from '../views/client/ProfileView.vue';
 import Profile from '../section/client/Profile.vue';
+import Location from '../section/client/Location.vue';
 
 import LoginView from '../views/client/LoginView.vue';
 
@@ -41,7 +42,11 @@ export default [
             {
                 path: '',
                 component: Profile,
-            }
+            },
+            {
+                path: 'location',
+                component: Location,
+            },
         ]
     },
     {
