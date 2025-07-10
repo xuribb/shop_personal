@@ -1,3 +1,4 @@
+// 前台系统
 import IndexViewClient from '../views/client/IndexView.vue';
 import Home from '../section/client/Home.vue';
 import Category from '../section/client/Category.vue';
@@ -10,7 +11,23 @@ import Location from '../section/client/Location.vue';
 
 import LoginView from '../views/client/LoginView.vue';
 
+
+
+
+
+
+
+// 后台系统
+import MenuViewAdmin from '../views/admin/MenuView.vue';
 import IndexViewAdmin from '../views/admin/IndexView.vue';
+import UserListAdmin from '../views/admin/UserListView.vue';
+import ShopCategoryAdmin from '../views/admin/ShopCategoryView.vue';
+import ShopListAdmin from '../views/admin/ShopListView.vue';
+import OrderListAdmin from '../views/admin/OrderListView.vue';
+import PayListAdmin from '../views/admin/PayListView.vue';
+import SiteConfigAdmin from '../views/admin/SiteConfigView.vue';
+import LoginViewAdmin from '../views/admin/LoginView.vue';
+
 
 export default [
     {
@@ -55,6 +72,40 @@ export default [
     },
     {
         path: '/admin',
-        component: IndexViewAdmin,
-    }
+        component: MenuViewAdmin,
+        children: [
+            {
+                path: '',
+                component: IndexViewAdmin
+            },
+            {
+                path: 'user_list',
+                component: UserListAdmin
+            },
+            {
+                path: 'shop_category',
+                component: ShopCategoryAdmin
+            },
+            {
+                path: 'shop_list',
+                component: ShopListAdmin
+            },
+            {
+                path: 'order_list',
+                component: OrderListAdmin
+            },
+            {
+                path: 'pay_list',
+                component: PayListAdmin
+            },
+            {
+                path: 'site_config',
+                component: SiteConfigAdmin
+            }
+        ]
+    },
+    {
+        path: '/admin/login',
+        component: LoginViewAdmin
+    },
 ];

@@ -1,5 +1,5 @@
 <template>
-    <div class="index">
+    <div class="site_config">
 
     </div>
 </template>
@@ -15,7 +15,7 @@ export default {
 </script>
 
 <style scoped>
-.index {
+.site_config {
     width: 100%;
     height: 600px;
     background-color: red;
