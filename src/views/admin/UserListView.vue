@@ -5,8 +5,8 @@
             <el-input class="input" v-model="query_cd.username" style="width: 200px" placeholder="用户名" />
             <el-input class="input" v-model="query_cd.phone" style="width: 200px" placeholder="手机号" />
             <el-input class="input" v-model="query_cd.email" style="width: 200px" placeholder="邮箱" />
-            <el-button type="primary">查询</el-button>
-            <el-button>重置</el-button>
+            <el-button type="primary" @click="query_btn">查询</el-button>
+            <el-button @click="reset_btn">重置</el-button>
         </div>
         <el-table border stripe highlight-current-row :data="tableData">
             <el-table-column prop="id" label="ID" />
@@ -22,7 +22,8 @@
             </el-table-column>
         </el-table>
         <div class="pagination">
-            <el-pagination background layout="prev, pager, next" :total="50" />
+            <el-pagination background layout="total,sizes,prev,pager,next,jumper" @change="change_status"
+                v-model:current-page="query_cd.page_num" v-model:page-size="query_cd.page_size" :total="total" />
         </div>
     </div>
 </template>
@@ -36,37 +37,47 @@ export default {
                 username: "",
                 phone: "",
                 email: "",
+                page_num: 1,
+                page_size: 10
             },
-            tableData: [
-                {
-                    id: "1",
-                    username: "1",
-                    gender: "1",
-                    phone: "1",
-                    email: "1",
-                    create_time: "1"
-                },
-                {
-                    id: "2",
-                    username: "2",
-                    gender: "2",
-                    phone: "2",
-                    email: "2",
-                    create_time: "2"
-                },
-                {
-                    id: "3",
-                    username: "3",
-                    gender: "3",
-                    phone: "3",
-                    email: "3",
-                    create_time: "3"
-                }
-            ]
+            total: 0,
+            tableData: []
         }
     },
     methods: {
-
+        async query(query_cd) {
+            let response = await this.request("/user/list", "POST", query_cd);
+            if (response === null) {
+                return;
+            }
+            response = await response.json();
+            if (response.status) {
+                this.tableData = response.data;
+                this.total = response.data[0]?.total;
+            } else {
+                ElMessage({
+                    message: response.msg,
+                    type: 'error',
+                    plain: true,
+                });
+            }
+        },
+        query_btn() {
+            this.query(this.query_cd);
+        },
+        reset_btn() {
+            this.query_cd.id = "";
+            this.query_cd.username = "";
+            this.query_cd.phone = "";
+            this.query_cd.email = "";
+            this.query_cd.page_num = 1;
+        },
+        change_status() {
+            this.query(this.query_cd);
+        }
+    },
+    mounted() {
+        this.query(this.query_cd);
     }
 }
 </script>

@@ -1,8 +1,12 @@
 <template>
     <div class="login" style="background-image: url('/images/logoasdsafd.png');">
         <div class="login_wrap">
-            <el-input class="input" v-model="username" placeholder="用户名" />
-            <el-input class="input" v-model="password" placeholder="密码" />
+            <el-input class="input" v-model.trim="username" placeholder="用户名" />
+            <el-input class="input" v-model.trim="password" placeholder="密码" />
+            <div class="captcha">
+                <el-input v-model.trim="captcha" placeholder="验证码" />
+                <img class="pointer" @click="refreshCaptcha" :src="captcha_src">
+            </div>
             <el-button class="login_btn" type="primary" @click="login">登录</el-button>
         </div>
     </div>
@@ -12,13 +16,57 @@
 export default {
     data() {
         return {
+            captcha_src: "/api/common/captcha",
             username: "",
-            password: ""
+            password: "",
+            captcha: ""
         }
     },
     methods: {
-        login() {
-            // fetch("")
+        refreshCaptcha() {
+            this.captcha_src = `/api/common/captcha?t=${Date.now()}`;
+        },
+        async login() {
+            if (!this.username) {
+                return ElMessage({
+                    message: '用户名错误！',
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            if (!this.password) {
+                return ElMessage({
+                    message: '密码错误！',
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            if (!this.captcha) {
+                return ElMessage({
+                    message: '验证码错误！',
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            let response = await this.request("/user/login", "POST", {
+                username: this.username,
+                password: this.password,
+                captcha: this.captcha
+            });
+            if (response === null) {
+                return;
+            }
+            response = await response.json();
+            ElMessage({
+                message: response.msg,
+                type: response.status ? 'success' : 'error',
+                plain: true,
+            });
+            // return console.log(response);
+            if (response.status) {
+                sessionStorage.setItem("username", this.username);
+                this.$router.replace("/admin");
+            }
         }
     }
 }
@@ -44,6 +92,16 @@ export default {
 
 .input {
     margin-bottom: 16px;
+}
+
+.captcha {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.captcha>img {
+    margin-left: 10px;
 }
 
 .login_btn {

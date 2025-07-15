@@ -29,6 +29,9 @@
         </el-menu>
         <div class="content">
             <div class="status_bar">
+                <div>
+                    <span>用户：{{ username }}</span>
+                </div>
                 <el-button size="small" text type="danger">退出</el-button>
             </div>
             <RouterView />
@@ -40,8 +43,11 @@
 export default {
     data() {
         return {
-            info: "admin"
+            username: ""
         }
+    },
+    mounted(){
+        this.username = sessionStorage.getItem("username");
     }
 }
 </script>
@@ -67,5 +73,9 @@ export default {
     background-color: #FFF;
     margin-bottom: 10px;
     box-shadow: 0 0 10px #CCC;
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 10px;
+    font-size: 14px;
 }
 </style>
