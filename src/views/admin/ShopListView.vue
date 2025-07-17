@@ -1,30 +1,59 @@
 <template>
     <div class="shop_list">
         <div class="query_condition">
-            <el-input class="input" v-model="query_cd.id" style="width: 100px" placeholder="ID" />
-            <el-input class="input" v-model="query_cd.username" style="width: 200px" placeholder="用户名" />
-            <el-input class="input" v-model="query_cd.phone" style="width: 200px" placeholder="手机号" />
-            <el-input class="input" v-model="query_cd.email" style="width: 200px" placeholder="邮箱" />
-            <el-button type="primary">查询</el-button>
-            <el-button>重置</el-button>
+            <div>
+                <el-input class="input" v-model="query_cd.id" style="width: 100px" placeholder="ID" />
+                <el-select class="input" v-model="query_cd.category_id" style="width: 200px" placeholder="商品分类">
+                    <el-option v-for="item in shop_category" :key="item.id" :label="item.category_name"
+                        :value="item.id" />
+                </el-select>
+                <el-input class="input" v-model="query_cd.shop_name" style="width: 200px" placeholder="商品名称" />
+                <el-button type="primary" @click="query(this.query_cd)">查询</el-button>
+                <el-button @click="reset_btn">重置</el-button>
+            </div>
+            <div>
+                <el-button type="success" @click="showDialog('save')">新增</el-button>
+            </div>
         </div>
         <el-table border stripe highlight-current-row :data="tableData">
             <el-table-column prop="id" label="ID" />
-            <el-table-column prop="username" label="用户名" />
-            <el-table-column prop="gender" label="性别" />
-            <el-table-column prop="phone" label="手机号" />
-            <el-table-column prop="email" label="邮箱" />
+            <el-table-column :formatter="formatter" prop="category_id" label="商品分类" />
+            <el-table-column prop="shop_name" label="商品名称" />
+            <el-table-column prop="shop_desc" label="商品描述" />
+            <el-table-column prop="shop_price" label="商品价格" />
+            <el-table-column prop="shop_img" label="商品图片" />
+            <el-table-column prop="inventory" label="库存" />
+            <el-table-column prop="sales" label="销售额" />
             <el-table-column prop="create_time" label="创建时间" />
             <el-table-column label="操作">
-                <template #default>
-                    <el-button type="primary" size="small">编辑</el-button>
+                <template #default="scope">
+                    <el-button type="primary" size="small" @click="showDialog('update', scope.row)">编辑</el-button>
+                    <el-button type="danger" size="small" @click="del(scope.row.id)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="pagination">
-            <el-pagination background layout="prev, pager, next" :total="50" />
+            <el-pagination background layout="total,sizes,prev,pager,next,jumper" @change="change_status"
+                v-model:current-page="query_cd.page_num" v-model:page-size="query_cd.page_size" :total="total" />
         </div>
     </div>
+    <el-dialog v-model="dialog" :title="type == 'save' ? '新增商品' : '修改商品'" width="400">
+        <div class="dialog_input_wrap">
+            <el-select class="input" v-model="shop.category_id" placeholder="商品分类">
+                <el-option v-for="item in shop_category" :key="item.id" :label="item.category_name" :value="item.id" />
+            </el-select>
+            <el-input class="input" v-model.trim="shop.shop_name" placeholder="商品名称" autocomplete="off" />
+            <el-input class="input" v-model.trim="shop.shop_desc" placeholder="商品描述" autocomplete="off" />
+            <el-input class="input" v-model.trim="shop.shop_price" placeholder="商品价格" autocomplete="off" />
+            <el-input class="input" v-model.trim="shop.shop_img" placeholder="商品图片" autocomplete="off" />
+            <el-input class="input" v-model.trim="shop.inventory" placeholder="库存" autocomplete="off" />
+            <el-input class="input" v-model.trim="shop.sales" placeholder="销售额" autocomplete="off" />
+        </div>
+        <template #footer>
+            <el-button @click="dialog = false">取消</el-button>
+            <el-button type="primary" @click="add2edit">确认</el-button>
+        </template>
+    </el-dialog>
 </template>
 
 <script>
@@ -33,40 +62,175 @@ export default {
         return {
             query_cd: {
                 id: "",
-                username: "",
-                phone: "",
-                email: "",
+                category_id: "",
+                shop_name: "",
+                page_num: 1,
+                page_size: 10
             },
-            tableData: [
-                {
-                    id: "1",
-                    username: "1",
-                    gender: "1",
-                    phone: "1",
-                    email: "1",
-                    create_time: "1"
-                },
-                {
-                    id: "2",
-                    username: "2",
-                    gender: "2",
-                    phone: "2",
-                    email: "2",
-                    create_time: "2"
-                },
-                {
-                    id: "3",
-                    username: "3",
-                    gender: "3",
-                    phone: "3",
-                    email: "3",
-                    create_time: "3"
-                }
-            ]
+            total: 0,
+            tableData: [],
+            shop_category: [],
+            shop: {
+                category_id: null,
+                shop_name: null,
+                shop_desc: null,
+                shop_price: null,
+                shop_img: null,
+                inventory: 0,
+                sales: 0
+            },
+            edit_id: null,
+            type: "save",
+            dialog: false,
         }
     },
     methods: {
+        showDialog(type, row) {
+            this.type = type;
+            if (type == 'update') {
+                this.shop.category_id = row.category_id;
+                this.shop.shop_name = row.shop_name;
+                this.shop.shop_desc = row.shop_desc;
+                this.shop.shop_price = row.shop_price;
+                this.shop.shop_img = row.shop_img;
+                this.shop.inventory = row.inventory;
+                this.shop.sales = row.sales;
+                this.edit_id = row.id;
+            } else {
+                this.shop = {
+                    category_id: null,
+                    shop_name: null,
+                    shop_desc: null,
+                    shop_price: null,
+                    shop_img: null,
+                    inventory: 0,
+                    sales: 0
+                };
+            }
+            this.dialog = true;
+        },
+        async query(query_cd) {
+            query_cd['type'] = 'query';
+            let response = await this.request("/shop/list", "POST", query_cd);
+            if (response === null) {
+                return;
+            }
 
+            response = await response.json();
+            this.tableData = response.data;
+            this.total = response.data[0]?.total;
+        },
+        reset_btn() {
+            this.query_cd.id = "";
+            this.query_cd.category_id = "";
+            this.query_cd.shop_name = "";
+            this.query_cd.page_num = 1;
+        },
+        change_status() {
+            this.query(this.query_cd);
+        },
+        async add2edit() {
+            if (!this.shop.category_id) {
+                return ElMessage({
+                    message: "商品分类不能为空",
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            if (!this.shop.shop_name) {
+                return ElMessage({
+                    message: "商品名称不能为空",
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            if (!this.shop.shop_desc) {
+                return ElMessage({
+                    message: "商品描述不能为空",
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            if (!this.shop.shop_price) {
+                return ElMessage({
+                    message: "商品价格不能为空",
+                    type: 'error',
+                    plain: true,
+                });
+            }
+            if (!this.shop.shop_img) {
+                return ElMessage({
+                    message: "商品图片不能为空",
+                    type: 'error',
+                    plain: true,
+                });
+            }
+
+            let response = null;
+            const data = JSON.parse(JSON.stringify(this.shop));
+            data['type'] = this.type;
+            if (this.type == 'save') {
+                response = await this.request("/shop/list", "POST", data);
+                if (response === null) {
+                    return;
+                }
+            } else if (this.type == 'update') {
+                data['id'] = this.edit_id;
+                response = await this.request("/shop/list", "POST", data);
+                if (response === null) {
+                    return;
+                }
+            }
+
+            response = await response.json();
+            ElMessage({
+                message: response.msg,
+                type: response.status ? 'success' : 'error',
+                plain: true,
+            });
+
+            this.query(this.query_cd);
+            this.dialog = false;
+        },
+        async del(id) {
+            let response = await this.request("/shop/list", "POST", {
+                id, type: 'delete'
+            });
+            if (response === null) {
+                return;
+            }
+
+            response = await response.json();
+            ElMessage({
+                message: response.msg,
+                type: response.status ? 'success' : 'error',
+                plain: true,
+            });
+
+            this.query(this.query_cd);
+        },
+        async getShopCategory() {
+            let response = await this.request("/shop/category", "POST", {
+                type: "query"
+            });
+            if (response === null) {
+                return;
+            }
+
+            response = await response.json();
+            this.shop_category = response.data;
+        },
+        formatter(row, col, cell_value) {
+            for (const shop_category of this.shop_category) {
+                if (shop_category.id === cell_value) {
+                    return shop_category.category_name;
+                }
+            }
+        }
+    },
+    mounted() {
+        this.query(this.query_cd);
+        this.getShopCategory();
     }
 }
 </script>
@@ -80,11 +244,17 @@ export default {
 
 .query_condition {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
 }
 
-.query_condition .input {
+.query_condition>div:first-child>.input {
     margin-right: 10px;
+}
+
+.dialog_input_wrap>.input {
+    margin-bottom: 10px;
 }
 
 .pagination {

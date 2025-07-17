@@ -1,72 +1,129 @@
 <template>
     <div class="shop_category">
-        <div class="query_condition">
-            <el-input class="input" v-model="query_cd.id" style="width: 100px" placeholder="ID" />
-            <el-input class="input" v-model="query_cd.username" style="width: 200px" placeholder="用户名" />
-            <el-input class="input" v-model="query_cd.phone" style="width: 200px" placeholder="手机号" />
-            <el-input class="input" v-model="query_cd.email" style="width: 200px" placeholder="邮箱" />
-            <el-button type="primary">查询</el-button>
-            <el-button>重置</el-button>
+        <div class="operate_wrap">
+            <el-button type="primary" @click="showDialog('save')">新增</el-button>
         </div>
         <el-table border stripe highlight-current-row :data="tableData">
             <el-table-column prop="id" label="ID" />
-            <el-table-column prop="username" label="用户名" />
-            <el-table-column prop="gender" label="性别" />
-            <el-table-column prop="phone" label="手机号" />
-            <el-table-column prop="email" label="邮箱" />
+            <el-table-column prop="category_name" label="分类名" />
+            <el-table-column prop="order_id" label="排序ID" />
             <el-table-column prop="create_time" label="创建时间" />
             <el-table-column label="操作">
-                <template #default>
-                    <el-button type="primary" size="small">编辑</el-button>
+                <template #default="scope">
+                    <el-button type="primary" size="small" @click="showDialog('update', scope.row)">编辑</el-button>
+                    <el-button type="danger" size="small" @click="del(scope.row.id)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <div class="pagination">
-            <el-pagination background layout="prev, pager, next" :total="50" />
-        </div>
     </div>
+    <el-dialog v-model="dialog" :title="type == 'save' ? '新增分类' : '修改分类'" width="400">
+        <div class="dialog_input_wrap">
+            <el-input class="input" v-model.trim="category_name" placeholder="分类名称" autocomplete="off" />
+            <el-input class="input" v-model.trim="order_id" placeholder="排序ID" autocomplete="off" />
+        </div>
+        <template #footer>
+            <el-button @click="dialog = false">取消</el-button>
+            <el-button type="primary" @click="add2edit">确认</el-button>
+        </template>
+    </el-dialog>
 </template>
 
 <script>
 export default {
     data() {
         return {
-            query_cd: {
-                id: "",
-                username: "",
-                phone: "",
-                email: "",
-            },
-            tableData: [
-                {
-                    id: "1",
-                    username: "1",
-                    gender: "1",
-                    phone: "1",
-                    email: "1",
-                    create_time: "1"
-                },
-                {
-                    id: "2",
-                    username: "2",
-                    gender: "2",
-                    phone: "2",
-                    email: "2",
-                    create_time: "2"
-                },
-                {
-                    id: "3",
-                    username: "3",
-                    gender: "3",
-                    phone: "3",
-                    email: "3",
-                    create_time: "3"
-                }
-            ]
+            tableData: [],
+            dialog: false,
+            type: "save",
+            category_name: "",
+            order_id: 0,
+            edit_id: ""
         }
     },
     methods: {
+        showDialog(type, row) {
+            this.type = type;
+            if (type == 'update') {
+                this.category_name = row.category_name;
+                this.order_id = row.order_id;
+                this.edit_id = row.id;
+            } else {
+                this.category_name = "";
+                this.order_id = 0;
+            }
+            this.dialog = true;
+        },
+        async query() {
+            let response = await this.request("/shop/category", "POST", {
+                type: "query"
+            });
+            if (response === null) {
+                return;
+            }
 
+            response = await response.json();
+            this.tableData = response.data;
+        },
+        async add2edit() {
+            if (!this.category_name) {
+                return ElMessage({
+                    message: "分类名称不能为空",
+                    type: 'error',
+                    plain: true,
+                });
+            }
+
+            let response = null;
+            if (this.type == 'save') {
+                response = await this.request("/shop/category", "POST", {
+                    category_name: this.category_name,
+                    order_id: this.order_id,
+                    type: this.type
+                });
+                if (response === null) {
+                    return;
+                }
+            } else if (this.type == 'update') {
+                response = await this.request("/shop/category", "POST", {
+                    id: this.edit_id,
+                    category_name: this.category_name,
+                    order_id: this.order_id,
+                    type: this.type
+                });
+                if (response === null) {
+                    return;
+                }
+            }
+            response = await response.json();
+            ElMessage({
+                message: response.msg,
+                type: response.status ? 'success' : 'error',
+                plain: true,
+            });
+
+            this.query();
+            this.dialog = false;
+        },
+        async del(id) {
+            let response = await this.request("/shop/category", "POST", {
+                id, type: 'delete'
+            });
+            if (response === null) {
+                return;
+            }
+
+            response = await response.json();
+            ElMessage({
+                message: response.msg,
+                type: response.status ? 'success' : 'error',
+                plain: true,
+            });
+
+            this.query();
+        }
+    },
+    mounted() {
+        this.query();
     }
 }
 </script>
@@ -78,18 +135,12 @@ export default {
     box-shadow: 0 0 10px #CCC;
 }
 
-.query_condition {
+.operate_wrap {
     display: flex;
     margin-bottom: 20px;
 }
 
-.query_condition .input {
-    margin-right: 10px;
-}
-
-.pagination {
-    display: flex;
-    justify-content: end;
-    margin-top: 20px;
+.input {
+    margin-bottom: 10px;
 }
 </style>
