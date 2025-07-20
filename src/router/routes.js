@@ -25,7 +25,12 @@ import ShopCategoryAdmin from '../views/admin/ShopCategoryView.vue';
 import ShopListAdmin from '../views/admin/ShopListView.vue';
 import OrderListAdmin from '../views/admin/OrderListView.vue';
 import PayListAdmin from '../views/admin/PayListView.vue';
+
 import SiteConfigAdmin from '../views/admin/SiteConfigView.vue';
+import BaseConfigAdmin from '../views/admin/SiteConfig/BaseConfigView.vue';
+import PassEditAdmin from '../views/admin/SiteConfig/PassEditView.vue';
+import OtherConfigAdmin from '../views/admin/SiteConfig/OtherConfigView.vue';
+
 import LoginViewAdmin from '../views/admin/LoginView.vue';
 
 
@@ -100,7 +105,21 @@ export default [
             },
             {
                 path: 'site_config',
-                component: SiteConfigAdmin
+                component: SiteConfigAdmin,
+                children: [
+                    {
+                        path: '',
+                        component: BaseConfigAdmin
+                    },
+                    {
+                        path: 'pass_edit',
+                        component: PassEditAdmin
+                    },
+                    {
+                        path: 'other_config',
+                        component: OtherConfigAdmin
+                    },
+                ]
             }
         ]
     },

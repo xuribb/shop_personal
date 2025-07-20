@@ -2,7 +2,7 @@
     <div class="login" style="background-image: url('/images/logoasdsafd.png');">
         <div class="login_wrap">
             <el-input class="input" v-model.trim="username" placeholder="用户名" />
-            <el-input class="input" v-model.trim="password" placeholder="密码" />
+            <el-input class="input" type="password" show-password v-model.trim="password" placeholder="密码" />
             <div class="captcha">
                 <el-input v-model.trim="captcha" placeholder="验证码" />
                 <img class="pointer" @click="refreshCaptcha" :src="captcha_src">
