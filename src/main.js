@@ -7,26 +7,14 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import App from './App.vue'
 import router from './router'
 
-import VueCropper from 'vue-cropperjs';
-import 'cropperjs/dist/cropper.css';
-
-
 const app = createApp(App);
-
-app.component(VueCropper);
 app.config.globalProperties = {
     domain: "/api",
     async request(url, method = "GET", body = "") {
         try {
             let options = null;
             if (method !== "GET") {
-                options = {
-                    method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(body)
-                }
+                options = { method, body };
             }
             return await fetch(this.domain + url, options);
         } catch {

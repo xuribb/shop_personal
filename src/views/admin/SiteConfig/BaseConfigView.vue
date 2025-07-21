@@ -7,7 +7,10 @@
         <div class="input_wrap">
             <span>网站LOGO：</span><input type="file" class="input" @change="change_img" />
         </div>
-
+        <img :src="bbcc" alt="">
+        <div class="box_cropper">
+            <vue-cropper ref="cropper" :src="site_logo" :view-mode="2"></vue-cropper>
+        </div>
         <div class="input_wrap">
             <span>域名备案号：</span><el-input class="input" v-model.trim="beian" />
         </div>
@@ -28,9 +31,14 @@
 </template>
 
 <script>
+import VueCropper from 'vue-cropperjs';
+import 'cropperjs/dist/cropper.css';
+
 export default {
+    components: { VueCropper },
     data() {
         return {
+            bbcc: "",
             site_name: null,
             site_logo: null,
             beian: null,
@@ -42,9 +50,9 @@ export default {
     },
     methods: {
         async query() {
-            let response = await this.request("/config/base_config", "POST", {
-                type: "query"
-            });
+            const formData = new FormData();
+            formData.append('type', 'query');
+            let response = await this.request("/config/base_config", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -60,17 +68,30 @@ export default {
                 this.kefu_qq = response.data.kefu_qq;
             }
         },
-        async edit() {
-            let response = await this.request("/config/base_config", "POST", {
-                type: "update",
-                site_name: this.site_name,
-                site_logo: this.site_logo,
-                beian: this.beian,
-                com_name: this.com_name,
-                com_loc: this.com_loc,
-                kefu_tel: this.kefu_tel,
-                kefu_qq: this.kefu_qq
-            });
+        edit() {
+            const canvas = this.$refs.cropper.getCroppedCanvas();
+            if (canvas) {
+                canvas.toBlob(this.uploadData);
+            } else {
+                this.uploadData(null);
+            }
+        },
+        async uploadData(blob) {
+            const formData = new FormData();
+            formData.append("type", "update");
+            formData.append("site_name", this.site_name);
+            if (blob) {
+                formData.append("site_logo", blob, "site_logo.png");
+            } else {
+                formData.append("site_logo", blob);
+            }
+            formData.append("beian", this.beian);
+            formData.append("com_name", this.com_name);
+            formData.append("com_loc", this.com_loc);
+            formData.append("kefu_tel", this.kefu_tel);
+            formData.append("kefu_qq", this.kefu_qq);
+
+            let response = await this.request("/config/base_config", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -86,7 +107,17 @@ export default {
             }
         },
         change_img(e) {
-            console.log(e.target.files);
+            const file = e.target.files[0];
+            if (file.type.indexOf('image/') === -1) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                this.site_logo = event.target.result;
+                this.$refs.cropper.replace(event.target.result);
+            };
+            reader.readAsDataURL(file);
         }
     },
     mounted() {
@@ -95,7 +126,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .base_config {
     margin: 0 15px;
 }
@@ -112,5 +143,13 @@ export default {
 
 .input {
     width: 300px;
+}
+
+.box_cropper {
+    /* box-shadow: 0 3px 5px 1px #cfcfcf; */
+    /* border: 10px solid white; */
+    width: 500px;
+    /* height: 500px; */
+    /* overflow-y: scroll; */
 }
 </style>
