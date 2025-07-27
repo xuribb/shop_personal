@@ -8,6 +8,7 @@ import Order from '../section/client/Order.vue';
 import ProfileView from '../views/client/ProfileView.vue';
 import Profile from '../section/client/Profile.vue';
 import Location from '../section/client/Location.vue';
+import ShopCart from '../section/client/ShopCart.vue';
 
 import LoginView from '../views/client/LoginView.vue';
 
@@ -21,8 +22,8 @@ import LoginView from '../views/client/LoginView.vue';
 import MenuViewAdmin from '../views/admin/MenuView.vue';
 import IndexViewAdmin from '../views/admin/IndexView.vue';
 import UserListAdmin from '../views/admin/UserListView.vue';
-import ShopCategoryAdmin from '../views/admin/ShopCategoryView.vue';
-import ShopListAdmin from '../views/admin/ShopListView.vue';
+import ShopCategoryAdmin from '../views/admin/Shop/ShopCategoryView.vue';
+import ShopListAdmin from '../views/admin/Shop/ShopListView.vue';
 import OrderListAdmin from '../views/admin/OrderListView.vue';
 import PayListAdmin from '../views/admin/PayListView.vue';
 
@@ -44,11 +45,11 @@ export default [
                 component: Home,
             },
             {
-                path: 'category',
+                path: 'category/:category_id/:category_name',
                 component: Category,
             },
             {
-                path: 'shop',
+                path: 'shop/:category_id/:category_name/:shop_id',
                 component: Shop,
             },
             {
@@ -69,6 +70,10 @@ export default [
                 path: 'location',
                 component: Location,
             },
+            {
+                path: 'shopcart',
+                component: ShopCart,
+            }
         ]
     },
     {

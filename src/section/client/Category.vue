@@ -5,7 +5,7 @@
                 <div class="category_nav">
                     <div>首页</div>
                     <img src="/images/more.png">
-                    <div>家用电器</div>
+                    <div>{{ $route.params.category_name }}</div>
                 </div>
                 <div class="category_order">
                     <div class="pointer">综合</div>
@@ -24,54 +24,14 @@
                 </div>
             </div>
             <div class="category_content">
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
+                <div class="shop_item pointer" v-for="shop of shop_list" :key="shop.id" :data-id="shop.id" @click="toShop">
+                    <img :src="shop.shop_img">
+                    <div class="shop_info_wrap">
                         <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
+                            <div>￥{{ shop.shop_price }}</div>
+                            <div>销售：{{ shop.sales }}</div>
                         </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
+                        <div class="shop_info">{{ shop.shop_name }}</div>
                     </div>
                 </div>
             </div>
@@ -85,7 +45,43 @@
 </template>
 
 <script>
+export default {
+    data() {
+        return {
+            shop_list: [],
+        }
+    },
+    methods: {
+        toShop(e){
+            const id = e.currentTarget.dataset.id;
+            this.$router.push(`/shop/${this.$route.params.category_id}/${this.$route.params.category_name}/${id}`);
+        },
+        async getShopList(page_num) {
+            const formData = new FormData();
+            formData.append('type', 'query');
+            formData.append('category_id', this.$route.params.category_id);
+            formData.append('page_num', page_num);
+            formData.append('page_size', 10);
+            let response = await this.request("/shop/list", "POST", formData);
+            if (response === null) {
+                return;
+            }
 
+            response = await response.json();
+            if (response.status) {
+                this.shop_list = response.data;
+            }
+        }
+    },
+    watch: {
+        '$route.params.category_id'(newValue, oldValue) {
+            this.getShopList(1);
+        }
+    },
+    created() {
+        this.getShopList(1);
+    }
+}
 </script>
 
 <style scoped>
@@ -128,25 +124,33 @@
 
 .category_content {
     display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+    flex-wrap: wrap;
 }
 
 .shop_item {
     width: 220px;
     height: 300px;
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
     overflow: hidden;
 }
 
 .shop_item>img {
     width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+.shop_info_wrap {
+    background-color: var(--color-white);
+    padding: 4px;
 }
 
 .shop_price {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 4px 0;
 }
 
 .shop_price>div:first-child {
@@ -162,9 +166,6 @@
 
 .shop_info {
     font-size: 14px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
 }

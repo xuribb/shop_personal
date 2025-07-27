@@ -1,6 +1,6 @@
 <template>
     <div class="shop_info">
-        商品详情
+        <slot></slot>
     </div>
 </template>
 
@@ -10,6 +10,6 @@
 
 <style scoped>
 .shop_info {
-    background-color: red;
+    background-color: var(--color-white);
 }
 </style>

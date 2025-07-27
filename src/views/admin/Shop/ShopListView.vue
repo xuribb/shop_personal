@@ -21,7 +21,11 @@
             <el-table-column prop="shop_name" label="商品名称" />
             <el-table-column prop="shop_desc" label="商品描述" />
             <el-table-column prop="shop_price" label="商品价格" />
-            <el-table-column prop="shop_img" label="商品图片" />
+            <el-table-column label="商品图片">
+                <template #default="scope">
+                    <img :src="scope.row.shop_img">
+                </template>
+            </el-table-column>
             <el-table-column prop="inventory" label="库存" />
             <el-table-column prop="sales" label="销售额" />
             <el-table-column prop="create_time" label="创建时间" />
@@ -45,7 +49,12 @@
             <el-input class="input" v-model.trim="shop.shop_name" placeholder="商品名称" autocomplete="off" />
             <el-input class="input" v-model.trim="shop.shop_desc" placeholder="商品描述" autocomplete="off" />
             <el-input class="input" v-model.trim="shop.shop_price" placeholder="商品价格" autocomplete="off" />
-            <el-input class="input" v-model.trim="shop.shop_img" placeholder="商品图片" autocomplete="off" />
+            <div class="shopImg_wrap">
+                <label for="uploadfile">上传商品图片</label>
+                <input type="file" accept="image/*" @change="selectImg" style="display: none;" id="uploadfile">
+                <!-- <img :src="shop.shop_img"> -->
+                <!-- <el-input class="input" v-model.trim="shop.shop_img" placeholder="商品图片" autocomplete="off" /> -->
+            </div>
             <el-input class="input" v-model.trim="shop.inventory" placeholder="库存" autocomplete="off" />
             <el-input class="input" v-model.trim="shop.sales" placeholder="销售额" autocomplete="off" />
         </div>
@@ -110,8 +119,13 @@ export default {
             this.dialog = true;
         },
         async query(query_cd) {
-            query_cd['type'] = 'query';
-            let response = await this.request("/shop/list", "POST", query_cd);
+            const formData = new FormData();
+            for (const key in query_cd) {
+                formData.append(key, query_cd[key]);
+            }
+            formData.append('type', 'query');
+
+            let response = await this.request("/shop/list", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -128,6 +142,9 @@ export default {
         },
         change_status() {
             this.query(this.query_cd);
+        },
+        selectImg(e) {
+            this.shop.shop_img = e.target.files[0];
         },
         async add2edit() {
             if (!this.shop.category_id) {
@@ -167,16 +184,20 @@ export default {
             }
 
             let response = null;
-            const data = JSON.parse(JSON.stringify(this.shop));
-            data['type'] = this.type;
+            const formData = new FormData();
+            formData.append('type', this.type);
+            for (const key in this.shop) {
+                formData.append(key, this.shop[key]);
+            }
+
             if (this.type == 'save') {
-                response = await this.request("/shop/list", "POST", data);
+                response = await this.request("/shop/list", "POST", formData);
                 if (response === null) {
                     return;
                 }
             } else if (this.type == 'update') {
-                data['id'] = this.edit_id;
-                response = await this.request("/shop/list", "POST", data);
+                formData.append('id', this.edit_id);
+                response = await this.request("/shop/list", "POST", formData);
                 if (response === null) {
                     return;
                 }
@@ -193,9 +214,10 @@ export default {
             this.dialog = false;
         },
         async del(id) {
-            let response = await this.request("/shop/list", "POST", {
-                id, type: 'delete'
-            });
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('type', 'delete');
+            let response = await this.request("/shop/list", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -210,9 +232,9 @@ export default {
             this.query(this.query_cd);
         },
         async getShopCategory() {
-            let response = await this.request("/shop/category", "POST", {
-                type: "query"
-            });
+            const formData = new FormData();
+            formData.append('type', 'query');
+            let response = await this.request("/shop/category", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -251,6 +273,11 @@ export default {
 
 .query_condition>div:first-child>.input {
     margin-right: 10px;
+}
+
+.shopImg_wrap {
+    display: flex;
+    margin-bottom: 10px;
 }
 
 .dialog_input_wrap>.input {

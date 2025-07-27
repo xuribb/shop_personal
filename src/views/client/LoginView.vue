@@ -10,6 +10,10 @@
                 <div class="login_wrap" v-if="is_login">
                     <input v-model.trim="username" class="login_input" placeholder="用户名" type="text">
                     <input v-model.trim="password" class="login_input" placeholder="密码" type="password">
+                    <div class="captcha_wrap">
+                        <input v-model.trim="captcha" class="login_input" placeholder="验证码" type="text">
+                        <img class="pointer" @click="refreshCaptcha" :src="captcha_src">
+                    </div>
                     <div class="login_btn pointer" @click="login">登录</div>
                     <div class="login_other">
                         <div class="pointer" @click="is_login = !is_login">立即注册</div>
@@ -20,6 +24,10 @@
                     <input v-model.trim="username" class="login_input" placeholder="用户名" type="text">
                     <input v-model.trim="password" class="login_input" placeholder="密码" type="password">
                     <input v-model.trim="password2" class="login_input" placeholder="确认密码" type="password">
+                    <div class="captcha_wrap">
+                        <input v-model.trim="captcha" class="login_input" placeholder="验证码" type="text">
+                        <img class="pointer" @click="refreshCaptcha" :src="captcha_src">
+                    </div>
                     <div class="login_btn pointer" @click="register">注册</div>
                     <div class="login_other">
                         <div></div>
@@ -44,7 +52,9 @@ export default {
             is_login: true,
             username: "",
             password: "",
-            password2: ""
+            password2: "",
+            captcha: "",
+            captcha_src: "/api/common/captcha"
         }
     },
     methods: {
@@ -56,11 +66,11 @@ export default {
                     plain: true,
                 });
             }
-
-            let response = await this.request("/user/login", "POST", {
-                username: this.username,
-                password: this.password
-            });
+            const formData = new FormData();
+            formData.append('username', this.username);
+            formData.append('password', this.password);
+            formData.append('captcha', this.captcha);
+            let response = await this.request("/user/login", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -92,10 +102,11 @@ export default {
                 });
             }
 
-            let response = await this.request("/user/register", "POST", {
-                username: this.username,
-                password: this.password
-            });
+            const formData = new FormData();
+            formData.append('username', this.username);
+            formData.append('password', this.password);
+            formData.append('captcha', this.captcha);
+            let response = await this.request("/user/register", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -110,6 +121,9 @@ export default {
                 sessionStorage.setItem("username", this.username);
                 this.$router.back();
             }
+        },
+        refreshCaptcha() {
+            this.captcha_src = `/api/common/captcha?t=${Date.now()}`;
         },
     },
     mounted() {
@@ -176,6 +190,19 @@ export default {
     margin-bottom: 15px;
     border-radius: 0;
     border: 1px solid var(--color-main-black);
+}
+
+.captcha_wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.captcha_wrap>input {
+    margin-bottom: 0;
+    flex-grow: 1;
+    margin-right: 10px;
 }
 
 .login_btn {

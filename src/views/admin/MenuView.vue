@@ -60,7 +60,7 @@ export default {
 
 .el-menu_custom {
     flex-basis: 160px;
-    height: 100vh;
+    min-height: 100vh;
     border-right: 0;
 }
 

@@ -1,15 +1,54 @@
 <template>
-    <div class="navbar">
-        <div class="item active">首页</div>
-        <div class="item">家用电器</div>
-        <div class="item">箱包产品</div>
-        <div class="item">母婴用品</div>
-        <div class="item">家具纺织品</div>
+    <div class="navbar" @click="toCategory">
+        <div :class="{ 'item': true, active: $route.params.category_id == undefined }" data-id="0">首页</div>
+        <div :class="{ 'item': true, active: $route.params.category_id == item.id }" :data-id="item.id" v-for="item of navbar"
+            :key="item.id">{{ item.category_name }}</div>
     </div>
 </template>
 
 <script>
+export default {
+    data() {
+        return {
+            navbar: null
+        }
+    },
+    methods: {
+        toCategory(e) {
+            const id = Number(e.target.dataset.id);
+            let category_name = '首页';
 
+            for (const item of this.navbar) {
+                if(item.id == id){
+                    category_name = item.category_name;
+                    break;
+                }
+            }
+
+            if (id) {
+                this.$router.push(`/category/${id}/${category_name}`);
+            } else {
+                this.$router.push("/");
+            }
+        },
+        async getTabBar() {
+            const formData = new FormData();
+            formData.append('type', 'query');
+            let response = await this.request("/shop/category", "POST", formData);
+            if (response === null) {
+                return;
+            }
+
+            response = await response.json();
+            if (response.status) {
+                this.navbar = response.data;
+            }
+        }
+    },
+    created() {
+        this.getTabBar();
+    }
+}
 </script>
 
 <style scoped>

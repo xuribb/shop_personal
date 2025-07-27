@@ -3,26 +3,26 @@
         <div class="category_nav">
             <div>首页</div>
             <img src="/images/more.png">
-            <div>家用电器</div>
+            <div>{{ $route.params.category_name }}</div>
             <img src="/images/more.png">
-            <div>65H5 65英寸120Hz高刷护眼4k智能网络客厅液晶电视机家用 75</div>
+            <div>{{ shop.shop_name }}</div>
         </div>
         <div class="shop_operate">
             <div class="shop_banner">
-                <img src="/images/1719150266550352.jpg">
+                <img :src="shop.shop_img">
                 <div>
                     <img class="img_active" src="/images/1719150266550352.jpg">
                     <img src="/images/1719150266550352.jpg">
                 </div>
             </div>
             <div class="shop_secondary_info">
-                <div>65H5 65英寸120Hz高刷护眼4k智能网络客厅液晶电视机家用 75</div>
+                <div>{{ shop.shop_name }}</div>
                 <div class="shop_price">
                     <div>
                         <div>售价</div>
-                        <div>￥1000.00</div>
+                        <div>￥{{ shop.shop_price }}</div>
                     </div>
-                    <div>销量：8</div>
+                    <div>销量：{{ shop.sales }}</div>
                 </div>
                 <div class="shop_number">
                     <div>数量</div>
@@ -31,11 +31,11 @@
                         <span>1</span>
                         <span>+</span>
                     </div>
-                    <div>库存：100</div>
+                    <div>库存：{{ shop.inventory }}</div>
                 </div>
                 <div class="shop_shop">
-                    <div>立即购买</div>
-                    <div>加入购物车</div>
+                    <div class="pointer">立即购买</div>
+                    <div class="pointer" @click="addShopCart">加入购物车</div>
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@
                 <div :class="{ 'info_active': this.tab == 'ShopInfo' }">详情</div>
                 <div :class="{ 'info_active': this.tab == 'ShopComment' }">评价(0)</div>
             </div>
-            <component :is="tab"></component>
+            <component :is="tab">{{ shop.shop_desc }}</component>
         </div>
     </div>
 </template>
@@ -60,16 +60,52 @@ export default {
     },
     data() {
         return {
+            shop: [],
             tab: 'ShopInfo'
         }
     },
     methods: {
+        async addShopCart() {
+            const formData = new FormData();
+            formData.append('type', 'save');
+            formData.append('shop_id', this.$route.params.shop_id);
+            let response = await this.request("/user/shopcart", "POST", formData);
+            if (response === null) {
+                return;
+            }
+
+            response = await response.json();
+            ElMessage({
+                message: response.msg,
+                type: response.status ? 'success' : 'error',
+                plain: true,
+            });
+        },
         changeImg() {
 
         },
         changeInfo() {
             this.tab = this.tab == "ShopInfo" ? "ShopComment" : "ShopInfo";
+        },
+        async getShop() {
+            const formData = new FormData();
+            formData.append('type', 'query');
+            formData.append('id', this.$route.params.shop_id);
+            formData.append('page_num', 1);
+            formData.append('page_size', 1);
+            let response = await this.request("/shop/list", "POST", formData);
+            if (response === null) {
+                return;
+            }
+
+            response = await response.json();
+            if (response.status) {
+                this.shop = response.data[0];
+            }
         }
+    },
+    mounted() {
+        this.getShop();
     }
 }
 </script>
@@ -103,6 +139,7 @@ export default {
 
 .shop_banner>img {
     width: 100%;
+    height: 400px;
 }
 
 .shop_banner>div>img {

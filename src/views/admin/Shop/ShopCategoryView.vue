@@ -54,9 +54,9 @@ export default {
             this.dialog = true;
         },
         async query() {
-            let response = await this.request("/shop/category", "POST", {
-                type: "query"
-            });
+            const formData = new FormData();
+            formData.append('type', 'query');
+            let response = await this.request("/shop/category", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -105,9 +105,10 @@ export default {
             this.dialog = false;
         },
         async del(id) {
-            let response = await this.request("/shop/category", "POST", {
-                id, type: 'delete'
-            });
+            const formData = new FormData();
+            formData.append('type', 'delete');
+            formData.append('id', id);
+            let response = await this.request("/shop/category", "POST", formData);
             if (response === null) {
                 return;
             }

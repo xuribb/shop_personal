@@ -15,6 +15,10 @@
                     <img src="/images/wodedizhi.png">
                     <span>收货地址</span>
                 </RouterLink>
+                <RouterLink to="/profile/shopcart">
+                    <img src="/images/wodedizhi.png">
+                    <span>购物车</span>
+                </RouterLink>
                 <RouterLink to="/profile">
                     <img src="/images/anquanshezhi.png">
                     <span>安全设置</span>
@@ -85,7 +89,7 @@ export default {
 .profile_nav {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     flex-basis: 160px;
     background-color: var(--color-main-black);
 }
@@ -94,6 +98,7 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 26px;
+    padding-left: 20px;
     color: var(--color-white);
 }
 

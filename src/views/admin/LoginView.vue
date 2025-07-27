@@ -48,11 +48,12 @@ export default {
                     plain: true,
                 });
             }
-            let response = await this.request("/user/login", "POST", {
-                username: this.username,
-                password: this.password,
-                captcha: this.captcha
-            });
+
+            const formData = new FormData();
+            formData.append('username', this.username);
+            formData.append('password', this.password);
+            formData.append('captcha', this.captcha);
+            let response = await this.request("/user/login", "POST", formData);
             if (response === null) {
                 return;
             }
@@ -62,7 +63,6 @@ export default {
                 type: response.status ? 'success' : 'error',
                 plain: true,
             });
-            // return console.log(response);
             if (response.status) {
                 sessionStorage.setItem("username", this.username);
                 this.$router.replace("/admin");
