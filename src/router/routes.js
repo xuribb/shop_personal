@@ -32,6 +32,10 @@ import BaseConfigAdmin from '../views/admin/SiteConfig/BaseConfigView.vue';
 import PassEditAdmin from '../views/admin/SiteConfig/PassEditView.vue';
 import OtherConfigAdmin from '../views/admin/SiteConfig/OtherConfigView.vue';
 
+import ArticleAdmin from '../views/admin/Articles/ArticleView.vue';
+import ArticleListAdmin from '../views/admin/Articles/ArticleListView.vue';
+import ArticleEditAdmin from '../views/admin/Articles/ArticleEditView.vue';
+
 import LoginViewAdmin from '../views/admin/LoginView.vue';
 
 
@@ -107,6 +111,20 @@ export default [
             {
                 path: 'pay_list',
                 component: PayListAdmin
+            },
+            {
+                path: 'articles',
+                component: ArticleAdmin,
+                children: [
+                    {
+                        path: '',
+                        component: ArticleListAdmin,
+                    },
+                    {
+                        path: 'edit/:id',
+                        component: ArticleEditAdmin,
+                    }
+                ]
             },
             {
                 path: 'site_config',

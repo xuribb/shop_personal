@@ -22,6 +22,10 @@
                 <template #title>支付管理</template>
                 <el-menu-item index="/admin/pay_list">支付配置</el-menu-item>
             </el-sub-menu>
+            <el-sub-menu index="文章管理">
+                <template #title>文章管理</template>
+                <el-menu-item index="/admin/articles">文章管理</el-menu-item>
+            </el-sub-menu>
             <el-sub-menu index="系统管理">
                 <template #title>系统管理</template>
                 <el-menu-item index="/admin/site_config">网站配置</el-menu-item>
