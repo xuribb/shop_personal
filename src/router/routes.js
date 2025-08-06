@@ -1,5 +1,6 @@
 // 前台系统
 import IndexViewClient from '../views/client/IndexView.vue';
+import ArticleViewClient from '../views/client/ArticleView.vue';
 import Home from '../section/client/Home.vue';
 import Category from '../section/client/Category.vue';
 import Shop from '../section/client/Shop.vue';
@@ -61,6 +62,10 @@ export default [
                 component: Order,
             },
         ]
+    },
+    {
+        path: '/article/:id/:title',
+        component: ArticleViewClient,
     },
     {
         path: '/profile',

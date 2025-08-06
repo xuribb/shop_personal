@@ -1,30 +1,13 @@
 <template>
     <div class="bottom">
         <div class="content">
-            <div class="section">
-                <div class="section_header">帮助中心</div>
-                <div class="pointer">支付方式</div>
-                <div class="pointer">订单查询</div>
-                <div class="pointer">发票制度</div>
+            <div class="section" v-for="article in articles" :key="article.id">
+                <div class="section_header">{{ article.label }}</div>
+                <div class="pointer" @click="toArticle(item.id, item.label)" v-for="item in article.children"
+                    :key="item.id">{{
+                        item.label }}</div>
             </div>
-            <div class="section">
-                <div class="section_header">配送方式</div>
-                <div class="pointer">验货与签收</div>
-                <div class="pointer">配送时间及运费</div>
-                <div class="pointer">物流政策</div>
-            </div>
-            <div class="section">
-                <div class="section_header">售后服务</div>
-                <div class="pointer">取消订单</div>
-                <div class="pointer">退货政策</div>
-                <div class="pointer">退货说明</div>
-            </div>
-            <div class="section">
-                <div class="section_header">客服中心</div>
-                <div class="pointer">购物流程</div>
-                <div class="pointer">常见问题</div>
-                <div class="pointer">服务协议</div>
-            </div>
+
             <div class="section company_info">
                 <div class="section_header">公司信息</div>
                 <div class="pointer">
@@ -41,16 +24,68 @@
                 </div>
             </div>
         </div>
-        <div class="copyright">
-            <div>版权所有：云购未来商务有限公司</div>
-            <div>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;</div>
-            <div>ICP备案：<a href="https://beian.miit.gov.cn/" target="_blank">蜀ICP备2024110969号-1</a></div>
-        </div>
+        <copy-right />
     </div>
 </template>
 
 <script>
+import CopyRight from "@/section/client/CopyRight.vue";
+export default {
+    components: {
+        CopyRight
+    },
+    data() {
+        return {
+            articles: [],
+        }
+    },
+    methods: {
+        async getArticles() {
+            const formData = new FormData();
+            formData.append('type', 'query');
+            let response = await this.request("/article/article", "POST", formData);
+            if (response === null) {
+                return;
+            }
+            response = await response.json();
+            if (response.status) {
+                const dataSource = [];
+                for (const element of response.data) {
+                    if (element.pid === null) {
+                        dataSource.push({
+                            id: element.id,
+                            label: element.name,
+                            children: []
+                        });
+                    }
+                }
 
+                for (const element of response.data) {
+                    if (element.pid === 0) {
+                        continue;
+                    }
+                    for (const parent of dataSource) {
+                        if (element.pid === parent.id) {
+                            parent.children.push({
+                                id: element.id,
+                                label: element.name,
+                                children: []
+                            });
+                            break;
+                        }
+                    }
+                }
+                this.articles = dataSource;
+            }
+        },
+        toArticle(id, title) {
+            this.$router.push(`/article/${id}/${title}`);
+        }
+    },
+    mounted() {
+        this.getArticles();
+    }
+}
 </script>
 
 <style scoped>
