@@ -53,114 +53,13 @@
                 </div>
             </div>
         </div>
-        <div class="shop_category">
-            <div class="category_header">
-                <div>家用电器</div>
-                <div>
-                    <div>更多</div>
-                    <img src="/images/more.png">
-                </div>
-            </div>
-            <div class="category_content">
-                <img class="shop_item" src="/images/1741484720279171.jpg">
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="shop_category">
-            <div class="category_header">
-                <div>家用电器</div>
-                <div>
-                    <div>更多</div>
-                    <img src="/images/more.png">
-                </div>
-            </div>
-            <div class="category_content">
-                <img class="shop_item" src="/images/1741484720279171.jpg">
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
 <script>
+import { mapActions } from 'pinia';
+import { useMenuStore } from '@/stores/menu';
+
 import Carousel from "@/section/client/Carousel.vue";
 
 export default {
@@ -174,6 +73,9 @@ export default {
                 { image: '/images/1741484523211763.jpg', alt: 'Image 2' }
             ]
         }
+    },
+    methods: {
+        ...mapActions(useMenuStore, ['getMenu'])
     }
 }
 </script>
