@@ -27,14 +27,14 @@
                 <div class="shop_number">
                     <div>数量</div>
                     <div class="shop_number_ope">
-                        <span>-</span>
-                        <span>1</span>
-                        <span>+</span>
+                        <span class="pointer" @click="--num ? null : num = 1">-</span>
+                        <span>{{ num }}</span>
+                        <span class="pointer" @click="num++">+</span>
                     </div>
                     <div>库存：{{ shop.inventory }}</div>
                 </div>
                 <div class="shop_shop">
-                    <div class="pointer">立即购买</div>
+                    <div class="pointer" @click="toBuy">立即购买</div>
                     <div class="pointer" @click="addShopCart">加入购物车</div>
                 </div>
             </div>
@@ -61,10 +61,14 @@ export default {
     data() {
         return {
             shop: [],
+            num: 1,
             tab: 'ShopInfo'
         }
     },
     methods: {
+        toBuy() {
+            this.$router.push(`/order?goods_ids=${this.shop.id}&goods_nums=${this.num}`);
+        },
         async addShopCart() {
             const formData = new FormData();
             formData.append('type', 'save');

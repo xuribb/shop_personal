@@ -26,6 +26,10 @@
                 <template #title>文章管理</template>
                 <el-menu-item index="/admin/articles">文章管理</el-menu-item>
             </el-sub-menu>
+            <el-sub-menu index="商城管理">
+                <template #title>商城管理</template>
+                <el-menu-item index="/admin/store/delivery">配送方式</el-menu-item>
+            </el-sub-menu>
             <el-sub-menu index="系统管理">
                 <template #title>系统管理</template>
                 <el-menu-item index="/admin/site_config">网站配置</el-menu-item>

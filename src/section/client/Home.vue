@@ -1,54 +1,24 @@
 <template>
     <div class="home">
         <Carousel :slides="slides" :interval="3000" />
-        <div class="shop_category">
+        <div class="shop_category" v-for="(shops, category_name) in shop_category" :key="category_name">
             <div class="category_header">
-                <div>家用电器</div>
+                <div>{{ category_name }}</div>
                 <div>
-                    <div>更多</div>
+                    <div class="pointer" @click="toCategory(shops[0])">更多</div>
                     <img src="/images/more.png">
                 </div>
             </div>
             <div class="category_content">
                 <img class="shop_item" src="/images/1741484720279171.jpg">
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
+                <div class="shop_item shop_item_obj pointer" @click="toShop(shop)" v-for="shop in shops" :key="shop.id">
+                    <img :src="shop.shop_img">
                     <div>
                         <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
+                            <div>￥{{ shop.shop_price }}</div>
+                            <div>销售：{{ shop.sales }}</div>
                         </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
-                    </div>
-                </div>
-                <div class="shop_item">
-                    <img src="/images/1719148658418921.jpg">
-                    <div>
-                        <div class="shop_price">
-                            <div>￥549.00</div>
-                            <div>销售：0</div>
-                        </div>
-                        <div class="shop_info">燃气热水器家用12升恒温天然气液化气煤气强排式平衡式零冷水气强排式平衡式零冷水</div>
+                        <div class="shop_info">{{ shop.shop_name }}</div>
                     </div>
                 </div>
             </div>
@@ -71,11 +41,26 @@ export default {
             slides: [
                 { image: '/images/1741484466657702.jpg', alt: 'Image 1' },
                 { image: '/images/1741484523211763.jpg', alt: 'Image 2' }
-            ]
+            ],
+            shop_category: null
         }
     },
     methods: {
-        ...mapActions(useMenuStore, ['getMenu'])
+        ...mapActions(useMenuStore, ['getMenu']),
+        toCategory(shop){
+            this.$router.push(`/category/${shop.category_id}/${shop.category_name}`);
+        },
+        toShop(shop){
+            this.$router.push(`/shop/${shop.category_id}/${shop.category_name}/${shop.id}`);
+        }
+    },
+    async mounted() {
+        let response = await this.request("/shop/home");
+        if (response === null) {
+            return;
+        }
+        response = await response.json();
+        this.shop_category = response.data;
     }
 }
 </script>
@@ -121,6 +106,9 @@ export default {
 
 .shop_item img {
     width: 100%;
+}
+.shop_item_obj img{
+    height: 240px;
 }
 
 .shop_price {

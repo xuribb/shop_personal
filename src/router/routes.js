@@ -37,6 +37,9 @@ import ArticleAdmin from '../views/admin/Articles/ArticleView.vue';
 import ArticleListAdmin from '../views/admin/Articles/ArticleListView.vue';
 import ArticleEditAdmin from '../views/admin/Articles/ArticleEditView.vue';
 
+import BaseStoreConfigAdmin from '../views/admin/StoreConfig/BaseStoreConfig.vue';
+import DeliveryConfigAdmin from '../views/admin/StoreConfig/DeliveryConfig.vue';
+
 import LoginViewAdmin from '../views/admin/LoginView.vue';
 
 
@@ -128,6 +131,16 @@ export default [
                     {
                         path: 'edit/:id',
                         component: ArticleEditAdmin,
+                    }
+                ]
+            },
+            {
+                path: 'store',
+                component: BaseStoreConfigAdmin,
+                children: [
+                    {
+                        path: 'delivery',
+                        component: DeliveryConfigAdmin
                     }
                 ]
             },
