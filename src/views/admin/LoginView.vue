@@ -16,7 +16,7 @@
 export default {
     data() {
         return {
-            captcha_src: "/api/common/captcha",
+            captcha_src: "",
             username: "",
             password: "",
             captcha: ""
@@ -24,7 +24,7 @@ export default {
     },
     methods: {
         refreshCaptcha() {
-            this.captcha_src = `/api/common/captcha?t=${Date.now()}`;
+            this.captcha_src = this.domain + `/common/captcha?t=${Date.now()}`;
         },
         async login() {
             if (!this.username) {
@@ -68,6 +68,9 @@ export default {
                 this.$router.replace("/admin");
             }
         }
+    },
+    mounted(){
+        this.captcha_src = this.domain + "/common/captcha";
     }
 }
 </script>

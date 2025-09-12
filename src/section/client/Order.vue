@@ -168,6 +168,9 @@ export default {
         }
     },
     async mounted() {
+        if(!sessionStorage.getItem("username")){
+            this.$router.push("/login");
+        }
         // 获取交付方式
         this.delivery = await this.getDelivery();
         this.active_delivery = this.delivery[0].way;
@@ -178,8 +181,8 @@ export default {
         }
         // 获取商品信息
         const search = new URLSearchParams(location.search);
-        const goods_ids = search.get("goods_ids").split(",");
-        this.goods_nums = search.get("goods_nums").split(",");
+        const goods_ids = search.get("goods_ids")?.split(",");
+        this.goods_nums = search.get("goods_nums")?.split(",");
         this.getGoods(goods_ids);
     },
 

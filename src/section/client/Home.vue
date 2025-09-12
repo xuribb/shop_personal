@@ -4,7 +4,7 @@
         <div class="shop_category" v-for="(shops, category_name) in shop_category" :key="category_name">
             <div class="category_header">
                 <div>{{ category_name }}</div>
-                <div>
+                <div v-if="shops.length == 4">
                     <div class="pointer" @click="toCategory(shops[0])">更多</div>
                     <img src="/images/more.png">
                 </div>
@@ -94,13 +94,14 @@ export default {
 
 .category_content {
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     margin-top: 10px;
 }
 
 .shop_item {
     width: 220px;
     height: 300px;
+    margin-right: 25px;
     overflow: hidden;
 }
 

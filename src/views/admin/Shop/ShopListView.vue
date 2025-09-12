@@ -23,7 +23,7 @@
             <el-table-column prop="shop_price" label="商品价格" />
             <el-table-column label="商品图片">
                 <template #default="scope">
-                    <img :src="scope.row.shop_img">
+                    <img style="height: 100px;" :src="scope.row.shop_img">
                 </template>
             </el-table-column>
             <el-table-column prop="inventory" label="库存" />

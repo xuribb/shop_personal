@@ -10,6 +10,6 @@
 
 <style scoped>
 .shop_comment {
-    background-color: green;
+    /* background-color: green; */
 }
 </style>

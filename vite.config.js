@@ -28,7 +28,7 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'http://shop_personal_backend',
+                target: 'http://shop.lujiawei.top',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, '')
             }

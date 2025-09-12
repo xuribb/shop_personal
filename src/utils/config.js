@@ -1,4 +1,4 @@
-export const DOMAIN = "/api";
+export const DOMAIN = "";
 export const request = async (url, method = "GET", body = "") => {
     try {
         let options = null;

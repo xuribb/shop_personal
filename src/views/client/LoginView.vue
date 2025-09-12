@@ -54,7 +54,7 @@ export default {
             password: "",
             password2: "",
             captcha: "",
-            captcha_src: "/api/common/captcha"
+            captcha_src: ""
         }
     },
     methods: {
@@ -123,10 +123,11 @@ export default {
             }
         },
         refreshCaptcha() {
-            this.captcha_src = `/api/common/captcha?t=${Date.now()}`;
+            this.captcha_src = this.domain + `/common/captcha?t=${Date.now()}`;
         },
     },
     mounted() {
+        this.captcha_src = this.domain + "/common/captcha";
         if (this.$route.query?.type) {
             this.is_login = false;
         }

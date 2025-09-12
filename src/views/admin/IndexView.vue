@@ -10,6 +10,13 @@ export default {
         return {
             info: "admin"
         }
+    },
+    mounted() {
+        const username = sessionStorage.getItem("username");
+        if (!username || username != "admin") {
+            sessionStorage.clear();
+            this.$router.push("/admin/login");
+        }
     }
 }
 </script>

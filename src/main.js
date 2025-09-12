@@ -9,7 +9,7 @@ import router from './router'
 
 const app = createApp(App);
 app.config.globalProperties = {
-    domain: "/api",
+    domain: "",
     async request(url, method = "GET", body = "") {
         try {
             let options = null;
